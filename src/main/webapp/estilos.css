@@ -1,0 +1,67 @@
+/* Estilos comunes de las paginas internas (catalogo, producto, carrito, reportes).
+   Cada JSP lo usa con:  <link rel="stylesheet" href="estilos.css">  */
+
+body { font-family: "Segoe UI", Arial, sans-serif; background: #f1f5f9; margin: 0; color: #0f172a; }
+
+/* Barra azul de arriba */
+header {
+    background: #1e3a8a;
+    color: white;
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+header h1 { margin: 0; font-size: 24px; }
+header h1 a { color: white; text-decoration: none; }
+header nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+header nav a { color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; background: #1e40af; }
+header nav a.salir { background: #dc2626; }
+
+main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+
+/* Botones */
+.boton {
+    display: inline-block;
+    background: #1e3a8a;
+    color: white;
+    border: none;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.boton:hover { background: #1e40af; }
+.boton.verde { background: #16a34a; }
+.boton.verde:hover { background: #15803d; }
+.boton.rojo { background: #dc2626; }
+.boton.gris { background: #64748b; }
+.boton:disabled { background: #cbd5e1; cursor: not-allowed; }
+form.en-linea { display: inline; }
+
+/* Mensajes */
+.aviso-ok    { background: #dcfce7; color: #166534; padding: 12px; border-radius: 6px; }
+.aviso-error { background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 6px; }
+
+/* Tarjetas de producto */
+.grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+.tarjeta { background: white; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+.categoria { font-size: 12px; color: #64748b; text-transform: uppercase; }
+.nombre { font-size: 18px; font-weight: bold; margin: 6px 0; }
+.nombre a { color: #0f172a; text-decoration: none; }
+.nombre a:hover { text-decoration: underline; }
+.marca { color: #1e3a8a; font-weight: bold; }
+.descripcion { color: #475569; font-size: 14px; min-height: 40px; }
+.precio { font-size: 22px; font-weight: bold; color: #16a34a; margin: 10px 0 4px; }
+.stock { font-size: 13px; color: #334155; margin-bottom: 10px; }
+.agotado { color: #dc2626; font-weight: bold; }
+
+/* Tablas (carrito) */
+table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+th { background: #1e3a8a; color: white; text-align: left; padding: 10px; }
+td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+.derecha { text-align: right; }
+.total { font-size: 22px; font-weight: bold; color: #16a34a; }

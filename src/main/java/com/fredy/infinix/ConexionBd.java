@@ -13,8 +13,10 @@ import java.sql.SQLException;
  */
 public class ConexionBd {
 
+    // Sin "serverTimezone=UTC": asi las fechas se leen con la hora de Paraguay, la misma
+    // que usa MySQL. Con UTC, la hora de las ventas salia 3 horas atrasada.
     private static final String URL = System.getenv().getOrDefault(
-            "DB_URL", "jdbc:mysql://localhost:3306/bd_infinixtech?useSSL=false&serverTimezone=UTC");
+            "DB_URL", "jdbc:mysql://localhost:3306/bd_infinixtech?useSSL=false");
     private static final String USER = System.getenv().getOrDefault("DB_USER", "root");
     private static final String PASS = System.getenv().getOrDefault("DB_PASSWORD", "root");
 

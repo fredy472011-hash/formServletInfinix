@@ -1,5 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.util.List"%>
+<%@page import="java.net.URLEncoder"%>
+<%@page import="java.nio.charset.StandardCharsets"%>
 <%@page import="com.fredy.infinix.Producto"%>
 <%
     // Esta pagina la llena CatalogoServlet. Si alguien la abre directo (catalogo.jsp),
@@ -9,10 +11,12 @@
         response.sendRedirect("catalogo");
         return;
     }
+    List<String> categorias = (List<String>) request.getAttribute("categorias");
+    String categoriaElegida = (String) request.getAttribute("categoriaElegida");
+    String buscar = (String) request.getAttribute("buscar");
     String error = (String) request.getAttribute("error");
-
-    // El nombre lo guardo LoginServlet en la sesion: sesion.setAttribute("usuario", ...)
-    String usuario = (String) session.getAttribute("usuario");
+    boolean hayFiltro = (categoriaElegida != null && !categoriaElegida.isBlank())
+                     || (buscar != null && !buscar.isBlank());
 %>
 <!DOCTYPE html>
 <html lang="es">
@@ -20,57 +24,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Infinix Tech - Catálogo</title>
+    <link rel="stylesheet" href="estilos.css">
     <style>
-        body { font-family: "Segoe UI", Arial, sans-serif; background: #f1f5f9; margin: 0; }
-        header {
-            background: #1e3a8a;
-            color: white;
-            padding: 16px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header h1 { margin: 0; font-size: 24px; }
-        header a { color: white; background: #dc2626; padding: 8px 16px; border-radius: 6px; text-decoration: none; margin-left: 12px; }
-        main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-        .grilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
-        .tarjeta {
-            background: white;
-            border-radius: 10px;
-            padding: 18px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-        }
-        .categoria { font-size: 12px; color: #64748b; text-transform: uppercase; }
-        .nombre { font-size: 18px; font-weight: bold; color: #0f172a; margin: 6px 0; }
-        .marca { color: #1e3a8a; font-weight: bold; }
-        .descripcion { color: #475569; font-size: 14px; min-height: 40px; }
-        .precio { font-size: 22px; font-weight: bold; color: #16a34a; margin: 10px 0 4px; }
-        .stock { font-size: 13px; color: #334155; }
-        .agotado { color: #dc2626; font-weight: bold; }
-        .error { background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 6px; }
+        .filtros { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
+        .categorias a { display: inline-block; padding: 7px 14px; margin: 2px; border-radius: 20px; background: white; color: #1e3a8a; text-decoration: none; border: 1px solid #cbd5e1; }
+        .categorias a.elegida { background: #1e3a8a; color: white; }
+        .buscador input[type="text"] { padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; width: 200px; }
+        .cantidad { color: #64748b; margin-bottom: 12px; }
     </style>
 </head>
 <body>
-<header>
-    <h1>INFINIX TECH · Catálogo</h1>
-    <div>
-        Hola, <strong><%= usuario %></strong>
-        <%-- href="salir" -> lo atiende SalirServlet, en doGet --%>
-        <a href="salir">Salir</a>
-    </div>
-</header>
+<%@include file="cabecera.jsp"%>
 
 <main>
     <% if (error != null) { %>
-        <p class="error"><%= error %></p>
+        <p class="aviso-error"><%= error %></p>
     <% } %>
+
+    <div class="filtros">
+        <%-- Botones de categoria: cada uno es un link con ?categoria=... --%>
+        <div class="categorias">
+            <a href="catalogo" class="<%= hayFiltro ? "" : "elegida" %>">Todas</a>
+            <% for (String c : categorias) { %>
+                <%-- URLEncoder: si la categoria tuviera espacios o tildes, los pasa a formato de direccion --%>
+                <a href="catalogo?categoria=<%= URLEncoder.encode(c, StandardCharsets.UTF_8) %>"
+                   class="<%= c.equals(categoriaElegida) ? "elegida" : "" %>"><%= c %></a>
+            <% } %>
+        </div>
+
+        <%-- Buscador: method="get" -> queda en la direccion: catalogo?buscar=note --%>
+        <form class="buscador" action="catalogo" method="get">
+            <input type="text" name="buscar" placeholder="Buscar por nombre...">
+            <input type="submit" class="boton" value="Buscar">
+        </form>
+    </div>
+
+    <p class="cantidad">
+        <%= productos.size() %> producto(s)
+        <% if (hayFiltro) { %> · <a href="catalogo">ver todos</a><% } %>
+    </p>
 
     <div class="grilla">
         <%-- Un "for" que repite la tarjeta por cada producto de la lista --%>
         <% for (Producto p : productos) { %>
             <div class="tarjeta">
                 <div class="categoria"><%= p.getCategoria() %> · <%= p.getCodigo() %></div>
-                <div class="nombre"><%= p.getNombre() %></div>
+                <%-- El nombre es un link al detalle: producto?codigo=CEL-001 --%>
+                <div class="nombre"><a href="producto?codigo=<%= p.getCodigo() %>"><%= p.getNombre() %></a></div>
                 <div class="marca"><%= p.getMarca() %></div>
                 <div class="descripcion"><%= p.getDescripcion() %></div>
                 <div class="precio">Gs. <%= p.getPrecioConPuntos() %></div>
@@ -81,6 +81,15 @@
                 <% } else { %>
                     <div class="stock agotado">Sin stock</div>
                 <% } %>
+
+                <%-- Agregar al carrito: un formulario chiquito que hace POST a CarritoServlet --%>
+                <form action="carrito" method="post">
+                    <input type="hidden" name="accion" value="agregar">
+                    <input type="hidden" name="codigo" value="<%= p.getCodigo() %>">
+                    <button type="submit" class="boton verde" <%= p.hayStock() ? "" : "disabled" %>>
+                        Agregar al carrito
+                    </button>
+                </form>
             </div>
         <% } %>
     </div>

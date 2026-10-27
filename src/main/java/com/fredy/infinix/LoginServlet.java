@@ -42,7 +42,8 @@ public class LoginServlet extends HttpServlet {
             errores.add("Escribí el usuario y la contraseña.");
         } else {
             try {
-                if (!loguearse(usuario.trim(), contrasenha)) {
+                // Si esta todo bien, loguearse() ya deja en la sesion: usuario, idUsuario y rol
+                if (!loguearse(usuario.trim(), contrasenha, req)) {
                     // Mismo mensaje para "no existe" y "contraseña mala":
                     // asi nadie puede averiguar que usuarios existen.
                     errores.add("Usuario o contraseña incorrectos.");
@@ -54,19 +55,6 @@ public class LoginServlet extends HttpServlet {
         }
 
         if (errores.isEmpty()) {
-            /*
-             * SESION (lo nuevo de este proyecto).
-             *
-             * El servidor no se acuerda de nadie entre un pedido y otro. La sesion es
-             * su "memoria": una cajita por cada navegador, que vive hasta que sale o
-             * pasan 30 minutos sin usarla. Es como la tarjeta metida en el cajero:
-             * mientras esta adentro, el cajero sabe quien sos.
-             *
-             * Guardamos el nombre del usuario. CatalogoServlet lo va a buscar ahi.
-             */
-            HttpSession sesion = req.getSession();   // la crea si no existe
-            sesion.setAttribute("usuario", usuario.trim());
-
             // REDIRECT al catalogo (otra direccion)
             resp.sendRedirect(req.getContextPath() + "/catalogo");
         } else {
@@ -79,9 +67,11 @@ public class LoginServlet extends HttpServlet {
     /*
      * Viene del diagrama de clases: Usuario.loguearse(usuario, contrasenha).
      * true si el usuario existe, esta activo y la contrasenha coincide.
+     * Si es true, tambien abre la SESION con los datos del usuario.
      */
-    private boolean loguearse(String usuario, String contrasenha) throws SQLException {
-        String sql = "SELECT contrasenha FROM usuarios WHERE usuario = ? AND activo = TRUE";
+    private boolean loguearse(String usuario, String contrasenha, HttpServletRequest req)
+            throws SQLException {
+        String sql = "SELECT id, contrasenha, rol FROM usuarios WHERE usuario = ? AND activo = TRUE";
         try (Connection conn = ConexionBd.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, usuario);
@@ -91,7 +81,28 @@ public class LoginServlet extends HttpServlet {
                 }
                 String hashGuardado = rs.getString("contrasenha");
                 // checkpw hace el hash de lo que escribio y lo compara con el guardado
-                return BCrypt.checkpw(contrasenha, hashGuardado);
+                if (!BCrypt.checkpw(contrasenha, hashGuardado)) {
+                    return false;                       // contrasenha mala
+                }
+
+                /*
+                 * SESION (lo nuevo de este proyecto).
+                 *
+                 * El servidor no se acuerda de nadie entre un pedido y otro. La sesion es
+                 * su "memoria": una cajita por cada navegador, que vive hasta que sale o
+                 * pasan 30 minutos sin usarla. Es como la tarjeta metida en el cajero:
+                 * mientras esta adentro, el cajero sabe quien sos.
+                 *
+                 * Guardamos 3 datos:
+                 *   usuario   -> para el "Hola, fcanete"
+                 *   idUsuario -> para grabar de quien es cada compra (ventas.id_usuario)
+                 *   rol       -> CLIENTE o ADMIN (solo ADMIN ve los reportes)
+                 */
+                HttpSession sesion = req.getSession();   // la crea si no existe
+                sesion.setAttribute("usuario", usuario);
+                sesion.setAttribute("idUsuario", rs.getInt("id"));
+                sesion.setAttribute("rol", rs.getString("rol"));
+                return true;
             }
         }
     }

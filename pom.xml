@@ -33,6 +33,13 @@
             <version>0.4</version>
         </dependency>
 
+        <!-- NUEVO: OpenPDF, para generar los reportes en PDF (paquete com.lowagie) -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+
         <!-- El driver de MySQL NO va aca: ya esta en la carpeta lib de tu Tomcat 11 -->
     </dependencies>
 
