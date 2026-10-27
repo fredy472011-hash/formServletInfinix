@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="com.fredy.infinix.Producto"%>
+<%@page import="com.fredy.infinix.Html"%>
 <%
     // Lo llena ProductoServlet. Si alguien abre producto.jsp directo, vuelve al catalogo.
     if (request.getAttribute("producto") == null && request.getAttribute("error") == null) {
@@ -14,10 +15,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Infinix Tech - Producto</title>
+    <title>InfinixTec - Producto</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
-        .detalle { background: white; border-radius: 10px; padding: 28px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); max-width: 640px; }
+        .detalle { background: white; border-radius: 10px; padding: 28px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; }
+        @media (max-width: 700px) { .detalle { grid-template-columns: 1fr; } }   /* en celular, una columna */
         .detalle h2 { margin: 6px 0; font-size: 28px; }
         .detalle dl { display: grid; grid-template-columns: 140px 1fr; gap: 8px; margin: 18px 0; }
         .detalle dt { font-weight: bold; color: #475569; }
@@ -33,15 +36,18 @@
         <p class="aviso-error"><%= error %></p>
     <% } else { %>
         <div class="detalle">
-            <div class="categoria"><%= p.getCategoria() %></div>
-            <h2><%= p.getNombre() %></h2>
-            <div class="marca"><%= p.getMarca() %></div>
+          <%-- Columna izquierda: la foto. Derecha: los datos --%>
+          <img class="foto" src="<%= p.getUrlImagen() %>" alt="<%= Html.escapar(p.getNombre()) %>">
+          <div>
+            <div class="categoria"><%= Html.escapar(p.getCategoria()) %></div>
+            <h2><%= Html.escapar(p.getNombre()) %></h2>
+            <div class="marca"><%= Html.escapar(p.getMarca()) %></div>
             <div class="precio">Gs. <%= p.getPrecioConPuntos() %></div>
 
             <%-- dl = lista de "dato: valor" --%>
             <dl>
                 <dt>Código</dt>       <dd><%= p.getCodigo() %></dd>
-                <dt>Descripción</dt>  <dd><%= p.getDescripcion() %></dd>
+                <dt>Descripción</dt>  <dd><%= Html.escapar(p.getDescripcion()) %></dd>
                 <dt>Stock</dt>
                 <dd>
                     <% if (p.hayStock()) { %>
@@ -59,8 +65,10 @@
                     Agregar al carrito
                 </button>
             </form>
+          </div>
         </div>
     <% } %>
 </main>
+<%@include file="pie.jsp"%>
 </body>
 </html>

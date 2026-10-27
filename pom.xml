@@ -40,6 +40,13 @@
             <version>2.4.0</version>
         </dependency>
 
+        <!-- NUEVO: ZXing (de Google), para dibujar el codigo QR del pago -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.4</version>
+        </dependency>
+
         <!-- El driver de MySQL NO va aca: ya esta en la carpeta lib de tu Tomcat 11 -->
     </dependencies>
 

@@ -75,7 +75,7 @@ public class CarritoServlet extends HttpServlet {
                 // Primera vez: lo buscamos en la base para tener sus datos
                 try {
                     Producto producto = ProductoServlet.buscarPorCodigo(codigo);
-                    if (producto != null && producto.hayStock()) {
+                    if (producto != null && producto.isActivo() && producto.hayStock()) {
                         carrito.add(new ItemCarrito(producto, 1));
                     }
                 } catch (SQLException e) {

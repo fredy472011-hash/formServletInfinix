@@ -14,12 +14,17 @@
     int enCarrito = CarritoServlet.obtenerCarrito(session).size();
 %>
 <header>
-    <h1><a href="catalogo">INFINIX TECH</a></h1>
+    <a href="catalogo" class="marca-tienda">
+        <img src="img/logo.svg" alt="" width="54" height="29">
+        <span>InfinixTec</span>
+    </a>
     <nav>
         <span>Hola, <strong><%= usuarioSesion %></strong></span>
         <a href="catalogo">Catálogo</a>
         <a href="carrito">Carrito (<%= enCarrito %>)</a>
+        <%-- Solo el ADMIN ve estos dos --%>
         <% if (esAdmin) { %>
+            <a href="admin-productos">Productos</a>
             <a href="reportes.jsp">Reportes</a>
         <% } %>
         <a href="salir" class="salir">Salir</a>

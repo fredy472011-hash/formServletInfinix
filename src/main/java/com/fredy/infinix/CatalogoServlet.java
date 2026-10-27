@@ -68,18 +68,18 @@ public class CatalogoServlet extends HttpServlet {
     /*
      * Arma el SELECT segun los filtros que vinieron.
      *
-     * Truco del "WHERE 1 = 1": 1 = 1 siempre es verdad, asi que no filtra nada.
-     * Sirve para poder agregar cada filtro siempre con "AND ...", sin pensar
-     * si es el primero o no.
+     * Siempre empieza con un WHERE (solo los activos). Asi cada filtro se agrega
+     * siempre con "AND ...", sin pensar si es el primero o no.
      *
-     *   sin filtros:        SELECT * FROM productos WHERE 1 = 1 ORDER BY ...
-     *   con categoria:      ... WHERE 1 = 1 AND categoria = ? ORDER BY ...
-     *   con los dos:        ... WHERE 1 = 1 AND categoria = ? AND nombre LIKE ? ORDER BY ...
+     *   sin filtros:        SELECT ... FROM productos WHERE activo = TRUE ORDER BY ...
+     *   con categoria:      ... WHERE activo = TRUE AND categoria = ? ORDER BY ...
+     *   con los dos:        ... WHERE activo = TRUE AND categoria = ? AND nombre LIKE ? ORDER BY ...
      *
      * Los valores van SIEMPRE con ? (PreparedStatement), nunca pegados al texto del SQL.
      */
     private List<Producto> listarProductos(String categoria, String buscar) throws SQLException {
-        String sql = "SELECT * FROM productos WHERE 1 = 1";
+        // "activo = TRUE" en vez de "1 = 1": los dados de baja en el ABM no se muestran
+        String sql = "SELECT " + Producto.COLUMNAS + " FROM productos WHERE activo = TRUE";
         List<String> valores = new ArrayList<>();   // lo que va en cada ?, en orden
 
         if (categoria != null && !categoria.isBlank()) {
@@ -110,8 +110,9 @@ public class CatalogoServlet extends HttpServlet {
     }
 
     // Las categorias que existen, sin repetir (DISTINCT): Accesorios, Celulares, ...
-    private List<String> listarCategorias() throws SQLException {
-        String sql = "SELECT DISTINCT categoria FROM productos ORDER BY categoria";
+    // static: tambien la usa el ABM, para sugerir categorias al cargar un producto
+    static List<String> listarCategorias() throws SQLException {
+        String sql = "SELECT DISTINCT categoria FROM productos WHERE activo = TRUE ORDER BY categoria";
         List<String> lista = new ArrayList<>();
         try (Connection conn = ConexionBd.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql);

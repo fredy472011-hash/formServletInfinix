@@ -113,7 +113,7 @@ public class ReportePdfServlet extends HttpServlet {
          *   detalle_ventas.id_producto -> productos.id    (que producto es cada linea)
          * Resultado: una fila por cada linea de detalle, con los datos de su venta repetidos.
          */
-        String sql = "SELECT v.id, v.fecha, v.total, v.estado, u.usuario, "
+        String sql = "SELECT v.id, v.fecha, v.total, v.estado, v.medio_pago, v.ultimos_digitos, v.cuotas, u.usuario, "
                    + "       p.codigo, p.nombre, d.cantidad, d.precio_unitario, d.subtotal "
                    + "FROM ventas v "
                    + "JOIN usuarios u       ON u.id = v.id_usuario "
@@ -148,6 +148,9 @@ public class ReportePdfServlet extends HttpServlet {
                     documento.add(new Paragraph("Venta N.º " + idVenta + "   ·   " + fecha
                             + "   ·   Cliente: " + rs.getString("usuario")
                             + "   ·   Estado: " + rs.getString("estado"), SUBTITULO));
+                    // Como se pago (diagrama: MedioPago)
+                    documento.add(new Paragraph("Pago: " + PagoServlet.describir(rs.getString("medio_pago"),
+                            rs.getString("ultimos_digitos"), rs.getInt("cuotas")), NORMAL));
 
                     tabla = nuevaTabla(new float[]{2, 5, 1.2f, 2.3f, 2.3f},
                             "Código", "Producto", "Cant.", "Precio unit.", "Subtotal");
@@ -198,7 +201,8 @@ public class ReportePdfServlet extends HttpServlet {
                 "Código", "Producto", "Categoría", "Stock", "Mínimo", "Situación");
         int aReponer = 0;
 
-        String sql = "SELECT * FROM productos ORDER BY categoria, nombre";
+        // Solo los activos: los dados de baja ya no se reponen
+        String sql = "SELECT " + Producto.COLUMNAS + " FROM productos WHERE activo = TRUE ORDER BY categoria, nombre";
         try (Connection conn = ConexionBd.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -228,7 +232,8 @@ public class ReportePdfServlet extends HttpServlet {
 
     // El encabezado de todos los reportes
     private void escribirTitulo(Document documento, String titulo) throws DocumentException {
-        documento.add(new Paragraph("INFINIX TECH", TITULO));
+        documento.add(new Paragraph("InfinixTec", TITULO));
+        documento.add(new Paragraph("Tu tienda de tecnología · Carapeguá", NORMAL));
         documento.add(new Paragraph(titulo, SUBTITULO));
         Paragraph emitido = new Paragraph("Emitido: " + LocalDateTime.now().format(FECHA_HORA), NORMAL);
         emitido.setSpacingAfter(14);

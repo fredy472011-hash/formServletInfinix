@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <!-- Se muestra cuando el producto todavia no tiene foto cargada en el ABM -->
+  <rect width="400" height="300" fill="#f1f5f9"/>
+  <path d="M200 135 C218 105 266 105 266 135 C266 165 218 165 200 135 C182 105 134 105 134 135 C134 165 182 165 200 135 Z"
+        fill="none" stroke="#cbd5e1" stroke-width="12" stroke-linecap="round"/>
+  <text x="200" y="215" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#94a3b8">Sin foto</text>
+</svg>

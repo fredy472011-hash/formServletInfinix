@@ -37,7 +37,9 @@ public class ProductoServlet extends HttpServlet {
         String error = null;
         try {
             producto = buscarPorCodigo(codigo);
-            if (producto == null) {
+            // Uno dado de baja en el ABM, para el cliente, ya no existe
+            if (producto == null || !producto.isActivo()) {
+                producto = null;
                 error = "Ese producto no existe.";
             }
         } catch (SQLException e) {
@@ -50,12 +52,13 @@ public class ProductoServlet extends HttpServlet {
         getServletContext().getRequestDispatcher("/producto.jsp").forward(req, resp);
     }
 
-    // El producto con ese codigo, o null si no hay ninguno
+    // El producto con ese codigo (activo o no), o null si no hay ninguno.
+    // Lo usan tambien el carrito y el ABM.
     static Producto buscarPorCodigo(String codigo) throws SQLException {
         if (codigo == null || codigo.isBlank()) {
             return null;
         }
-        String sql = "SELECT * FROM productos WHERE codigo = ?";
+        String sql = "SELECT " + Producto.COLUMNAS + " FROM productos WHERE codigo = ?";
         try (Connection conn = ConexionBd.obtenerConexion();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, codigo);

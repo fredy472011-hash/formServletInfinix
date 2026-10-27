@@ -14,7 +14,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Infinix Tech - Ingresar</title>
+    <title>InfinixTec - Ingresar</title>
     <style>
         body {
             font-family: "Segoe UI", Arial, sans-serif;
@@ -32,6 +32,7 @@
             border-radius: 12px;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
         }
+        .logo { display: block; margin: 0 auto 6px; }
         h1 { margin: 0; color: #1e3a8a; text-align: center; font-size: 28px; }
         .sub { text-align: center; color: #64748b; margin: 4px 0 24px; }
         label { display: block; font-weight: bold; margin-bottom: 4px; color: #334155; }
@@ -63,8 +64,9 @@
 </head>
 <body>
 <div class="caja">
-    <h1>INFINIX TECH</h1>
-    <p class="sub">Ingresá para ver el catálogo</p>
+    <img class="logo" src="img/logo.svg" alt="" width="90" height="48">
+    <h1>InfinixTec</h1>
+    <p class="sub">Tu tienda de tecnología · Ingresá para ver el catálogo</p>
 
     <%-- Avisos verdes --%>
     <% if (registrado) { %>

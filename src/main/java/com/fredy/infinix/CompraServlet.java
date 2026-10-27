@@ -24,6 +24,9 @@ import java.util.List;
  *
  * Si algo falla en el medio (por ejemplo, no alcanza el stock de un producto),
  * ROLLBACK: se deshace todo, como si no hubiera pasado nada.
+ *
+ * NO se llega directo: primero pasa por PagoServlet, que valida el pago y despues
+ * hace forward aca con 3 atributos: medioPago, ultimosDigitos y cuotas.
  */
 @WebServlet("/comprar")
 public class CompraServlet extends HttpServlet {
@@ -43,6 +46,15 @@ public class CompraServlet extends HttpServlet {
             return;
         }
 
+        // Como se pago. Lo dejo PagoServlet. Si no esta, alguien se salto el pago: lo mandamos ahi.
+        String medioPago = (String) req.getAttribute("medioPago");
+        if (medioPago == null) {
+            resp.sendRedirect(req.getContextPath() + "/pago");
+            return;
+        }
+        String ultimosDigitos = (String) req.getAttribute("ultimosDigitos");
+        int cuotas = (Integer) req.getAttribute("cuotas");
+
         int idUsuario = (Integer) sesion.getAttribute("idUsuario");
 
         /*
@@ -52,9 +64,10 @@ public class CompraServlet extends HttpServlet {
          * ahi un texto o codigo y hacerlo aparecer en la pagina.
          */
         try {
-            int idVenta = registrarVenta(idUsuario, carrito);
+            int idVenta = registrarVenta(idUsuario, carrito, medioPago, ultimosDigitos, cuotas);
             carrito.clear();   // la compra ya esta en la base: el carrito queda vacio
-            sesion.setAttribute("avisoOk", "¡Compra confirmada! Venta N.º " + idVenta + ".");
+            sesion.setAttribute("avisoOk", "¡Compra confirmada! Venta N.º " + idVenta
+                    + " · Pagado con " + PagoServlet.describir(medioPago, ultimosDigitos, cuotas) + ".");
 
         } catch (SinStockException e) {
             // No alcanzo el stock: el mensaje dice de que producto
@@ -72,10 +85,12 @@ public class CompraServlet extends HttpServlet {
      * Devuelve el numero de la venta nueva.
      * Diagrama de clases: Venta.confirmar()
      */
-    private int registrarVenta(int idUsuario, List<ItemCarrito> carrito)
+    private int registrarVenta(int idUsuario, List<ItemCarrito> carrito,
+                               String medioPago, String ultimosDigitos, int cuotas)
             throws SQLException, SinStockException {
 
-        String sqlVenta = "INSERT INTO ventas (id_usuario, total) VALUES (?, ?)";
+        String sqlVenta = "INSERT INTO ventas (id_usuario, total, medio_pago, ultimos_digitos, cuotas) "
+                        + "VALUES (?, ?, ?, ?, ?)";
         String sqlDetalle = "INSERT INTO detalle_ventas "
                 + "(id_venta, id_producto, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?)";
         // "AND stock >= ?": solo descuenta si alcanza. Si no alcanza, no cambia ninguna fila.
@@ -91,6 +106,9 @@ public class CompraServlet extends HttpServlet {
                 // La cabecera de la venta
                 psVenta.setInt(1, idUsuario);
                 psVenta.setLong(2, CarritoServlet.calcularTotal(carrito));
+                psVenta.setString(3, medioPago);
+                psVenta.setString(4, ultimosDigitos);   // null en QR -> queda NULL en la base
+                psVenta.setInt(5, cuotas);
                 psVenta.executeUpdate();
 
                 // El id que MySQL le dio a la venta (AUTO_INCREMENT). Igual que en tu FormServlet.

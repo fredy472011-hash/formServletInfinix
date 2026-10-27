@@ -14,8 +14,9 @@ header {
     flex-wrap: wrap;
     gap: 10px;
 }
-header h1 { margin: 0; font-size: 24px; }
-header h1 a { color: white; text-decoration: none; }
+/* Logo + nombre de la tienda */
+.marca-tienda { display: flex; align-items: center; gap: 10px; color: white; text-decoration: none; font-size: 24px; font-weight: bold; }
+.marca-tienda img { background: white; border-radius: 8px; padding: 3px 4px; }
 header nav { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 header nav a { color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; background: #1e40af; }
 header nav a.salir { background: #dc2626; }
@@ -65,3 +66,44 @@ th { background: #1e3a8a; color: white; text-align: left; padding: 10px; }
 td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
 .derecha { text-align: right; }
 .total { font-size: 22px; font-weight: bold; color: #16a34a; }
+
+/* Pie de pagina (pie.jsp) */
+footer {
+    max-width: 1100px;
+    margin: 40px auto 24px;
+    padding: 18px 16px 0;
+    border-top: 1px solid #cbd5e1;
+    color: #475569;
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Fotos de producto: siempre el mismo tamanho, sin deformarse (object-fit: contain) */
+.foto { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #f8fafc; border-radius: 8px; margin-bottom: 10px; }
+.miniatura { width: 56px; height: 42px; object-fit: contain; background: #f8fafc; border-radius: 4px; vertical-align: middle; }
+
+/* Formularios (ABM y pago) */
+.formulario { background: white; border-radius: 10px; padding: 24px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+.formulario label { display: block; font-weight: bold; margin: 12px 0 4px; color: #334155; }
+.formulario input[type="text"], .formulario input[type="number"], .formulario select, .formulario textarea {
+    width: 100%; padding: 9px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; font-size: 15px; font-family: inherit;
+}
+.formulario input[readonly] { background: #f1f5f9; color: #64748b; }
+.dos-columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+.ayuda { font-size: 13px; color: #64748b; }
+ul.errores { background: #fee2e2; color: #991b1b; padding: 10px 14px 10px 30px; border-radius: 6px; }
+
+/* Pestanhas (medios de pago): son links comunes; la elegida queda blanca, pegada al formulario */
+.pestanas { display: flex; gap: 6px; margin-bottom: 0; }
+.pestanas a { padding: 10px 18px; border-radius: 8px 8px 0 0; background: #e2e8f0; color: #1e3a8a; text-decoration: none; font-weight: bold; }
+.pestanas a.elegida { background: white; }
+
+/* Estado en la tabla del ABM */
+.etiqueta { padding: 3px 8px; border-radius: 10px; font-size: 12px; font-weight: bold; }
+.etiqueta.activo { background: #dcfce7; color: #166534; }
+.etiqueta.baja { background: #fee2e2; color: #991b1b; }
+tr.de-baja td { color: #94a3b8; }

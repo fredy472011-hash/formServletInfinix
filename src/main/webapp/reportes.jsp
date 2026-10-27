@@ -15,7 +15,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Infinix Tech - Reportes</title>
+    <title>InfinixTec - Reportes</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
         .reportes { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
@@ -33,8 +33,8 @@
     <div class="reportes">
         <div class="tarjeta">
             <h3>Reporte de ventas</h3>
-            <p>Cada venta con el cliente que compró, la fecha y sus productos (cantidad, precio y subtotal).
-               Al final, el total vendido.</p>
+            <p>Cada venta con el cliente que compró, la fecha, cómo pagó y sus productos
+               (cantidad, precio y subtotal). Al final, el total vendido.</p>
             <%-- Link comun: el servlet responde con un PDF en vez de una pagina --%>
             <a href="reporte-pdf?tipo=ventas" class="boton">Descargar PDF</a>
         </div>
@@ -46,5 +46,6 @@
         </div>
     </div>
 </main>
+<%@include file="pie.jsp"%>
 </body>
 </html>

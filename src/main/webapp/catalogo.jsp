@@ -3,6 +3,7 @@
 <%@page import="java.net.URLEncoder"%>
 <%@page import="java.nio.charset.StandardCharsets"%>
 <%@page import="com.fredy.infinix.Producto"%>
+<%@page import="com.fredy.infinix.Html"%>
 <%
     // Esta pagina la llena CatalogoServlet. Si alguien la abre directo (catalogo.jsp),
     // no hay lista: lo mandamos al servlet, que controla la sesion y trae los productos.
@@ -23,7 +24,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Infinix Tech - Catálogo</title>
+    <title>InfinixTec - Catálogo</title>
     <link rel="stylesheet" href="estilos.css">
     <style>
         .filtros { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }
@@ -48,7 +49,7 @@
             <% for (String c : categorias) { %>
                 <%-- URLEncoder: si la categoria tuviera espacios o tildes, los pasa a formato de direccion --%>
                 <a href="catalogo?categoria=<%= URLEncoder.encode(c, StandardCharsets.UTF_8) %>"
-                   class="<%= c.equals(categoriaElegida) ? "elegida" : "" %>"><%= c %></a>
+                   class="<%= c.equals(categoriaElegida) ? "elegida" : "" %>"><%= Html.escapar(c) %></a>
             <% } %>
         </div>
 
@@ -68,11 +69,17 @@
         <%-- Un "for" que repite la tarjeta por cada producto de la lista --%>
         <% for (Producto p : productos) { %>
             <div class="tarjeta">
-                <div class="categoria"><%= p.getCategoria() %> · <%= p.getCodigo() %></div>
-                <%-- El nombre es un link al detalle: producto?codigo=CEL-001 --%>
-                <div class="nombre"><a href="producto?codigo=<%= p.getCodigo() %>"><%= p.getNombre() %></a></div>
-                <div class="marca"><%= p.getMarca() %></div>
-                <div class="descripcion"><%= p.getDescripcion() %></div>
+                <%-- La foto: el navegador pide esa direccion (ImagenServlet) o el dibujo "Sin foto".
+                     loading="lazy" = la pide recien cuando la tarjeta aparece en pantalla --%>
+                <a href="producto?codigo=<%= p.getCodigo() %>">
+                    <img class="foto" src="<%= p.getUrlImagen() %>" alt="<%= Html.escapar(p.getNombre()) %>" loading="lazy">
+                </a>
+                <div class="categoria"><%= Html.escapar(p.getCategoria()) %> · <%= p.getCodigo() %></div>
+                <%-- El nombre es un link al detalle: producto?codigo=CEL-001
+                     Html.escapar: el nombre lo cargo alguien en el ABM, lo mostramos "seguro" --%>
+                <div class="nombre"><a href="producto?codigo=<%= p.getCodigo() %>"><%= Html.escapar(p.getNombre()) %></a></div>
+                <div class="marca"><%= Html.escapar(p.getMarca()) %></div>
+                <div class="descripcion"><%= Html.escapar(p.getDescripcion()) %></div>
                 <div class="precio">Gs. <%= p.getPrecioConPuntos() %></div>
 
                 <%-- hayStock() viene del diagrama de clases --%>
@@ -94,5 +101,6 @@
         <% } %>
     </div>
 </main>
+<%@include file="pie.jsp"%>
 </body>
 </html>

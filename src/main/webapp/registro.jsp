@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Infinix Tech - Crear cuenta</title>
+    <title>InfinixTec - Crear cuenta</title>
     <style>
         body {
             font-family: "Segoe UI", Arial, sans-serif;
@@ -27,6 +27,7 @@
             border-radius: 12px;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
         }
+        .logo { display: block; margin: 0 auto 6px; }
         h1 { margin: 0; color: #1e3a8a; text-align: center; font-size: 26px; }
         .sub { text-align: center; color: #64748b; margin: 4px 0 24px; }
         label { display: block; font-weight: bold; margin-bottom: 4px; color: #334155; }
@@ -57,8 +58,9 @@
 </head>
 <body>
 <div class="caja">
+    <img class="logo" src="img/logo.svg" alt="" width="90" height="48">
     <h1>Crear cuenta</h1>
-    <p class="sub">Infinix Tech</p>
+    <p class="sub">InfinixTec · Tu tienda de tecnología</p>
 
     <% if (errores != null && !errores.isEmpty()) { %>
         <ul class="errores">
