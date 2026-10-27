@@ -54,7 +54,8 @@ login.jsp ──"Registrate"──► registro.jsp ──(cuenta creada)──�
    ```
    Después de un `setx`, cerrá y volvé a abrir IntelliJ o la terminal.
 
-5. **Compilar y subir a Tomcat:**
+5. **Compilar y subir a Tomcat:** en IntelliJ, elegí la configuración **tomcat** (arriba a la derecha) y
+   apretá ▶. Viene en la carpeta `.run` del proyecto. Es lo mismo que escribir:
    ```powershell
    mvn package tomcat7:redeploy
    ```
