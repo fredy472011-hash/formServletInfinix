@@ -1,0 +1,6 @@
+# Lo que genera Maven al compilar (se vuelve a crear solo)
+target/
+
+# Configuracion de IntelliJ de cada PC
+.idea/
+*.iml
